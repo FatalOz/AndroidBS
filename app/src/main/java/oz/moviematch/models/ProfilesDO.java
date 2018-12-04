@@ -1,4 +1,4 @@
-package oz.moviematch.main.moviematch.models;
+package oz.moviematch.models;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
@@ -11,8 +11,7 @@ import java.util.Map;
 
 public class ProfilesDO {
     private String _userId;
-    private Double _rep;
-    private Map<String, String> _reviews;
+    private Map<String, Boolean> _reviews;
 
     @DynamoDBHashKey(attributeName = "userId")
     @DynamoDBAttribute(attributeName = "userId")
@@ -23,22 +22,13 @@ public class ProfilesDO {
     public void setUserId(final String _userId) {
         this._userId = _userId;
     }
-    @DynamoDBRangeKey(attributeName = "rep")
-    @DynamoDBAttribute(attributeName = "rep")
-    public Double getRep() {
-        return _rep;
-    }
 
-    public void setRep(final Double _rep) {
-        this._rep = _rep;
-    }
     @DynamoDBAttribute(attributeName = "reviews")
-    public Map<String, String> getReviews() {
+    public Map<String, Boolean> getReviews() {
         return _reviews;
     }
 
-    public void setReviews(final Map<String, String> _reviews) {
+    public void setReviews(final Map<String, Boolean> _reviews) {
         this._reviews = _reviews;
     }
-
 }
