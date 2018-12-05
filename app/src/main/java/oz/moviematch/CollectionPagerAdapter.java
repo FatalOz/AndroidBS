@@ -10,11 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import oz.moviematch.models.Movie;
 import retrofit2.Call;
@@ -66,6 +71,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
         TextView movieName;
         TextView movieYear;
         ImageView moviePoster;
+        Button favoriteButton;
 
         @Override
         public View onCreateView(LayoutInflater inflater,
@@ -100,6 +106,16 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             movieName = view.findViewById(R.id.movieName);
             movieYear = view.findViewById(R.id.movieYear);
             moviePoster = view.findViewById(R.id.poster);
+
+            favoriteButton = view.findViewById(R.id.favorite_button);
+            favoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //add to favorites
+
+                    Toast.makeText(v.getContext(), "favorite added", Toast.LENGTH_SHORT).show();
+                }
+            });
             return rootView;
         }
 

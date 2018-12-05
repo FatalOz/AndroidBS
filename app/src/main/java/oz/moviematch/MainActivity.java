@@ -17,8 +17,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         // Connect to AWS
-        AWSMobileClient.getInstance().initialize(this).execute();
-
+        //AWSMobileClient.getInstance().initialize(this).execute();
         setContentView(R.layout.activity_main);
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
