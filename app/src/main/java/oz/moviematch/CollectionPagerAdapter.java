@@ -1,5 +1,6 @@
 package oz.moviematch;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -68,7 +68,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
         TextView movieName;
         TextView movieYear;
         ImageView moviePoster;
-        Button favoriteButton;
+        ImageView favoriteButton;
 
         @Override
         public View onCreateView(LayoutInflater inflater,
@@ -105,11 +105,25 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             moviePoster = view.findViewById(R.id.poster);
 
             favoriteButton = view.findViewById(R.id.favorite_button);
+            //to change with Abel's favorite icon to keep consistency
+            favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_unfavorited));
+
+            favoriteButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    //View favorites
+                    Intent intent = new Intent(view.getContext(), FavoriteActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+
             favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //add to favorites
-
+                    //to change with Abel's favorite icon to keep consistency
+                    favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
                     Toast.makeText(v.getContext(), "favorite added", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -142,6 +156,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 t.printStackTrace();
             }
         };
+
     }
     /* public static class RetrieveMovie extends AsyncTask<String, Void, Movie> {
 

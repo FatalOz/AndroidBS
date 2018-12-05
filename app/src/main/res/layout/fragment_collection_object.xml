@@ -19,7 +19,7 @@
     <ImageView
         android:id="@+id/poster"
         android:layout_width="0dp"
-        android:layout_height="392dp"
+        android:layout_height="362dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
@@ -28,10 +28,10 @@
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.011" />
+        app:layout_constraintVertical_bias="0.264" />
 
     <TextView
         android:id="@+id/movieYear"
@@ -58,17 +58,33 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <Button
+    <!--<Button-->
+        <!--android:id="@+id/favorite_button"-->
+        <!--android:layout_width="93dp"-->
+        <!--android:layout_height="51dp"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:text="@string/favorite"-->
+        <!--android:onClick="favoriteMovie"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ratingBar" />-->
+
+    <ImageView
         android:id="@+id/favorite_button"
         android:layout_width="93dp"
         android:layout_height="51dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:text="@string/favorite"
-        android:onClick="favoriteMovie"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ratingBar" />
+        app:layout_constraintStart_toEndOf="@+id/ratingBar"
+        app:srcCompat="@drawable/ic_favorite" />
 
 </android.support.constraint.ConstraintLayout>
