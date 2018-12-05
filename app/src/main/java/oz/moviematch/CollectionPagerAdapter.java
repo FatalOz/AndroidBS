@@ -18,9 +18,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import oz.moviematch.models.Movie;
 import retrofit2.Call;
 import retrofit2.Callback;
