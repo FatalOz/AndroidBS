@@ -30,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".FavoriteActivity"></activity>
+        <activity android:name=".DisplayPageActivity"></activity>
     </application>
 
 </manifest>
