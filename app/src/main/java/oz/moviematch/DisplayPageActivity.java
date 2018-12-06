@@ -52,6 +52,8 @@ public class DisplayPageActivity extends Activity {
 
         OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
 
+        final ArrayList<String> favorites = getFavorites(getBaseContext());
+
         movieName = findViewById(R.id.movieName);
         movieYear = findViewById(R.id.movieYear);
         moviePoster = findViewById(R.id.poster);
@@ -59,6 +61,11 @@ public class DisplayPageActivity extends Activity {
         likePercentage = findViewById(R.id.likePercentage);
         favoriteButton = findViewById(R.id.favoriteButton);
         myInterface.getMovie("tt" + String.format("%07d", movieId)).enqueue(movieCallback);
+
+        if(favorites.contains("" + movieId)){
+            isFavorited = true;
+            favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
+        }
 
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +101,6 @@ public class DisplayPageActivity extends Activity {
                     addToFavorites("" + movieId, getBaseContext());
 
                     // DEBUG
-                    ArrayList<String> favorites = getFavorites(getBaseContext());
                     for(String favorite: favorites){
                         Log.d("Favorites", favorite);
                     }
