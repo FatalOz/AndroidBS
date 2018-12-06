@@ -3,25 +3,19 @@ package oz.moviematch.models;
 import com.google.gson.annotations.SerializedName;
 
 public class Movie {
-
     public String getPosterUrl() {
         return posterUrl;
     }
-
     public String getTitle() {
         return title;
     }
-
     public String getYear() {
         return year;
     }
-
     @SerializedName("Title")
     String title;
-
     @SerializedName("Year")
     String year;
-
     @SerializedName("Poster")
     String posterUrl;
 
@@ -33,7 +27,6 @@ public class Movie {
             return true;
         }
     }
-
     public Movie(String title, String year, String posterUrl) {
         this.title = title;
         this.year = year;
