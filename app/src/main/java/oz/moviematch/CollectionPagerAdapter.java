@@ -77,7 +77,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             // properly.
             final View rootView = inflater.inflate(
                     R.layout.fragment_collection_object, container, false);
-            Bundle args = getArguments();
+            final Bundle args = getArguments();
 
             omdbInterface.getMovie("tt" + String.format("%07d", args.getInt(ARG_OBJECT))).enqueue(movieCallback);
 
@@ -104,9 +104,8 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             movieYear = view.findViewById(R.id.movieYear);
             moviePoster = view.findViewById(R.id.poster);
 
-            favoriteButton = view.findViewById(R.id.favorite_button);
-            //to change with Abel's favorite icon to keep consistency
-            favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_unfavorited));
+            favoriteButton = view.findViewById(R.id.favoriteButton);
+            favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
 
             favoriteButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -122,9 +121,9 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 @Override
                 public void onClick(View v) {
                     //add to favorites
-                    //to change with Abel's favorite icon to keep consistency
-                    favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                    Toast.makeText(v.getContext(), "favorite added", Toast.LENGTH_SHORT).show();
+                    favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_gold_24dp));
+                    Toast.makeText(v.getContext(), "Favorite Added!", Toast.LENGTH_SHORT).show();
+                    DisplayPageActivity.addToFavorites("" + args.getInt(ARG_OBJECT), view.getContext());
                 }
             });
             return rootView;
@@ -138,7 +137,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                     movieName.setText(movie.getTitle());
                     movieYear.setText(movie.getYear());
                     if(movie.hasPoster()){
-                        Picasso.with(view.getContext())
+                        Picasso.get()
                                 .load(movie.getPosterUrl())
                                 .into(moviePoster);
                     }
