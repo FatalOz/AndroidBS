@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // and NOT a FragmentPagerAdapter.
 public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
     static oz.moviematch.OmdbInterface omdbInterface;
-
+    static boolean isFavorite = false;
     public CollectionPagerAdapter(FragmentManager fm) {
         super(fm);
 
@@ -121,9 +121,17 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 @Override
                 public void onClick(View v) {
                     //add to favorites
-                    favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_gold_24dp));
-                    Toast.makeText(v.getContext(), "Favorite Added!", Toast.LENGTH_SHORT).show();
-                    DisplayPageActivity.addToFavorites("" + args.getInt(ARG_OBJECT), view.getContext());
+                    isFavorite = !isFavorite;
+                    if (isFavorite) {
+                        favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                        Toast.makeText(v.getContext(), "Favorite Deleted", Toast.LENGTH_SHORT).show();
+                        DisplayPageActivity.removeFromFavorites("" + args.getInt(ARG_OBJECT), view.getContext());
+                    } else {
+                        favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_gold_24dp));
+                        Toast.makeText(v.getContext(), "Favorite Added!", Toast.LENGTH_SHORT).show();
+                        DisplayPageActivity.addToFavorites("" + args.getInt(ARG_OBJECT), view.getContext());
+                    }
+
                 }
             });
             return rootView;

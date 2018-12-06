@@ -27,7 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FavoriteActivity" />
+        <activity android:name=".FavoriteActivity"></activity>
+        <activity android:name=".DisplayPageActivity"></activity>
     </application>
 
 </manifest>

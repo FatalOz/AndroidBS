@@ -55,6 +55,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
         ImageView moviePoster;
         TextView movieName;
+        String movieId;
 
         public MovieViewHolder(View view, MovieRecyclerViewAdapter adapter) {
             super(view);
@@ -66,11 +67,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
+            intent.putExtra("MOVIE_ID", movieId);
             v.getContext().startActivity(intent);
         }
 
         public void bind(String current) {
 
+            movieId = current;
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://www.omdbapi.com")
                     .addConverterFactory(GsonConverterFactory.create())

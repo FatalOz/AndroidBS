@@ -41,14 +41,15 @@ public class DisplayPageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_movie_display);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.omdbapi.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        movieId = 2231461;
+        String id = getIntent().getStringExtra("MOVIE_ID");
+        movieId = Integer.parseInt(id);
 
         OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
 
