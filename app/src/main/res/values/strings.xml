@@ -17,5 +17,6 @@
     </string>
     <string name="year">year</string>
     <string name="name">name</string>
+    <string name="title_activity_authenticator">AuthenticatorActivity</string>
 
 </resources>

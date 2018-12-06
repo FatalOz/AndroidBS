@@ -1,1 +1,39 @@
-{"UserAgent":"MobileHub/1.0","Version":"1.0","CredentialsProvider":{"CognitoIdentity":{"Default":{"PoolId":"us-west-2:b8b99b73-a321-4aa2-9772-5f77f5bb4550","Region":"us-west-2"}}},"IdentityManager":{"Default":{}},"CognitoUserPool":{"Default":{"PoolId":"us-west-2_bcKKOYTF5","AppClientId":"3dgruedirccrlnkceb3ohks9d2","AppClientSecret":"1f4m0qpo1pgk58dkhf7b8tptviisv8p7hqhv9jrd1vdk30amidmv","Region":"us-west-2"}},"DynamoDBObjectMapper":{"Default":{"Region":"us-west-1"}},"PinpointAnalytics":{"Default":{"AppId":"f08781b9f9a740be99ca3b085b77ab0d","Region":"us-east-1"}},"PinpointTargeting":{"Default":{"Region":"us-east-1"}},"GoogleSignIn":{"ClientId-WebApp":"932709994451-m574n9cllig9pajgca4jsuhr2pmltq5g","Permissions":"email,profile,openid"}}
+{
+  "UserAgent": "MobileHub/1.0",
+  "Version": "1.0",
+  "CredentialsProvider": {
+    "CognitoIdentity": {
+      "Default": {
+        "PoolId": "us-west-2:b8b99b73-a321-4aa2-9772-5f77f5bb4550",
+        "Region": "us-west-2"
+      }
+    }
+  },
+  "IdentityManager": {
+    "Default": {}
+  },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "us-west-2_bcKKOYTF5",
+      "AppClientId": "3dgruedirccrlnkceb3ohks9d2",
+      "AppClientSecret": "1f4m0qpo1pgk58dkhf7b8tptviisv8p7hqhv9jrd1vdk30amidmv",
+      "Region": "us-west-2"
+    }
+  },
+  "DynamoDBObjectMapper": {
+    "Default": {
+      "Region": "us-west-1"
+    }
+  },
+  "PinpointAnalytics": {
+    "Default": {
+      "AppId": "f08781b9f9a740be99ca3b085b77ab0d",
+      "Region": "us-east-1"
+    }
+  },
+  "PinpointTargeting": {
+    "Default": {
+      "Region": "us-east-1"
+    }
+  }
+}
