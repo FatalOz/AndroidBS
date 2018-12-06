@@ -1,5 +1,6 @@
 package oz.moviematch;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -66,6 +68,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
         TextView movieName;
         TextView movieYear;
         ImageView moviePoster;
+        ImageView favoriteButton;
 
         @Override
         public View onCreateView(LayoutInflater inflater,
@@ -74,7 +77,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             // properly.
             final View rootView = inflater.inflate(
                     R.layout.fragment_collection_object, container, false);
-            Bundle args = getArguments();
+            final Bundle args = getArguments();
 
             omdbInterface.getMovie("tt" + String.format("%07d", args.getInt(ARG_OBJECT))).enqueue(movieCallback);
 
@@ -100,6 +103,29 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
             movieName = view.findViewById(R.id.movieName);
             movieYear = view.findViewById(R.id.movieYear);
             moviePoster = view.findViewById(R.id.poster);
+
+            favoriteButton = view.findViewById(R.id.favoriteButton);
+            favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+
+            favoriteButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    //View favorites
+                    Intent intent = new Intent(view.getContext(), FavoriteActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+
+            favoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //add to favorites
+                    favoriteButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_gold_24dp));
+                    Toast.makeText(v.getContext(), "Favorite Added!", Toast.LENGTH_SHORT).show();
+                    DisplayPageActivity.addToFavorites("" + args.getInt(ARG_OBJECT), view.getContext());
+                }
+            });
             return rootView;
         }
 
@@ -111,7 +137,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                     movieName.setText(movie.getTitle());
                     movieYear.setText(movie.getYear());
                     if(movie.hasPoster()){
-                        Picasso.with(view.getContext())
+                        Picasso.get()
                                 .load(movie.getPosterUrl())
                                 .into(moviePoster);
                     }
@@ -129,6 +155,7 @@ public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
                 t.printStackTrace();
             }
         };
+
     }
     /* public static class RetrieveMovie extends AsyncTask<String, Void, Movie> {
 
