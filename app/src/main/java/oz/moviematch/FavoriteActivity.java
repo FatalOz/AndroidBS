@@ -8,11 +8,18 @@ import android.view.Menu;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
 
 public class FavoriteActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private MovieRecyclerViewAdapter mAdapter;
+    DynamoDBMapper dynamoDBMapper;
 
     private EditText mSearchBoxEditText;
     private ProgressBar mProgressBar;
@@ -29,6 +36,18 @@ public class FavoriteActivity extends AppCompatActivity {
         mAdapter = new MovieRecyclerViewAdapter(this, DisplayPageActivity.getFavorites(this));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        AWSMobileClient.getInstance().initialize(this).execute();
+        AWSCredentialsProvider credentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
+        AWSConfiguration configuration = AWSMobileClient.getInstance().getConfiguration();
+
+        // Add code to instantiate a AmazonDynamoDBClient
+        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentialsProvider);
+
+        this.dynamoDBMapper = DynamoDBMapper.builder()
+                .dynamoDBClient(dynamoDBClient)
+                .awsConfiguration(configuration)
+                .build();
     }
     //search menu item
     @Override

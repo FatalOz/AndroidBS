@@ -12,13 +12,26 @@ import java.util.Map;
 
 public class MoviesDO {
     private String _movieId;
+    private Map<String, Boolean> _ratings;
     private Map<String, String> _reviews;
-    private Double _rating;
 
     @DynamoDBHashKey(attributeName = "movieId")
     @DynamoDBAttribute(attributeName = "movieId")
     public String getMovieId() {
         return _movieId;
+    }
+
+    public void setMovieId(final String _movieId) {
+        this._movieId = _movieId;
+    }
+    @DynamoDBRangeKey(attributeName = "ratings")
+    @DynamoDBAttribute(attributeName = "ratings")
+    public Map<String, Boolean> getRatings() {
+        return _ratings;
+    }
+
+    public void setRatings(final Map<String, Boolean> _ratings) {
+        this._ratings = _ratings;
     }
 
     @DynamoDBAttribute(attributeName = "reviews")
@@ -30,6 +43,4 @@ public class MoviesDO {
         this._reviews = _reviews;
     }
 
-    @DynamoDBAttribute(attributeName = "rating")
-    public Double getRating(){ return _rating; }
 }

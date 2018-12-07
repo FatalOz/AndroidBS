@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class ProfilesDO {
     private String _userId;
-    private Map<String, Boolean> _reviews;
+    private Map<String,Boolean> _ratings;
+    private Map<String, String> _reviews;
 
     @DynamoDBHashKey(attributeName = "userId")
     @DynamoDBAttribute(attributeName = "userId")
@@ -22,13 +23,22 @@ public class ProfilesDO {
     public void setUserId(final String _userId) {
         this._userId = _userId;
     }
+    @DynamoDBRangeKey(attributeName = "ratings")
+    @DynamoDBAttribute(attributeName = "ratings")
+    public Map<String,Boolean> getRatings() {
+        return _ratings;
+    }
 
+    public void setRatings(final Map<String,Boolean> _ratings) {
+        this._ratings = _ratings;
+    }
     @DynamoDBAttribute(attributeName = "reviews")
-    public Map<String, Boolean> getReviews() {
+    public Map<String, String> getReviews() {
         return _reviews;
     }
 
-    public void setReviews(final Map<String, Boolean> _reviews) {
+    public void setReviews(final Map<String, String> _reviews) {
         this._reviews = _reviews;
     }
+
 }
