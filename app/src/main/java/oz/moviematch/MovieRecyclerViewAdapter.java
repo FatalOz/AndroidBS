@@ -55,12 +55,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
         ImageView moviePoster;
         TextView movieName;
+        TextView movieYear;
         String movieId;
 
         public MovieViewHolder(View view, MovieRecyclerViewAdapter adapter) {
             super(view);
             this.moviePoster = (ImageView)  view.findViewById(R.id.poster);
             this.movieName = (TextView) view.findViewById(R.id.movieName);
+            this.movieYear = (TextView) view.findViewById(R.id.movieYear);
         }
 
 
@@ -95,8 +97,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                     // Get All Movie Data
                     String posterUrl = movieResponse.getPosterUrl();
                     String movieTitle = movieResponse.getTitle();
+                    String movieDate = movieResponse.getYear();
                     // Set All Movie Data
                     movieName.setText(movieTitle);
+                    movieYear.setText(movieDate);
                     Picasso.get()
                             .load(posterUrl)
                             .placeholder(R.drawable.ic_movie_filter_black_24dp)
