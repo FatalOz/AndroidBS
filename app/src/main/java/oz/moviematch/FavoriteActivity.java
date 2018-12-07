@@ -24,8 +24,6 @@ import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
-
-
 public class FavoriteActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
