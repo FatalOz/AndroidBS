@@ -124,7 +124,7 @@ public class DisplayPageActivity extends Activity {
                             isFavorited = true;
                             favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
                         } else {
-                            favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+
                         }
 
                         likeButton.setOnClickListener(new View.OnClickListener() {
@@ -134,17 +134,14 @@ public class DisplayPageActivity extends Activity {
                                 if(isLiked){
                                     DBUtils.updateRating(movieId, true);
                                     likeButton.setImageResource(R.drawable.thumbs_up_filled);
-                                    if(percentLiked != 100){
-                                        percentLiked++;
-                                    }
+                                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+
                                 } else {
                                     likeButton.setImageResource(R.drawable.thumb_up_empty);
-                                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+
                                     DBUtils.updateRating(movieId, null);
                                     isNotLiked = false;
-                                    if(percentLiked != 0){
-                                        percentLiked--;
-                                    }
+
                                 }
                                 likePercentage.setText(percentLiked + "% " + ratingMessage);
                             }
@@ -159,15 +156,11 @@ public class DisplayPageActivity extends Activity {
                                     dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
                                     isLiked = false;
                                     likeButton.setImageResource(R.drawable.thumb_up_empty);
-                                    if(percentLiked != 100){
-                                        percentLiked--;
-                                    }
+
                                 } else {
                                     dislikeButton.setImageResource(R.drawable.thumb_up_empty);
                                     DBUtils.updateRating(movieId, null);
-                                    if(percentLiked != 0){
-                                        percentLiked++;
-                                    }
+
                                 }
                                 likePercentage.setText(percentLiked + "% " + ratingMessage);
                             }
