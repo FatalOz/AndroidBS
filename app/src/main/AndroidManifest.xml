@@ -29,6 +29,7 @@
         </activity>
         <activity android:name=".FavoriteActivity"></activity>
         <activity android:name=".DisplayPageActivity"></activity>
+        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>
