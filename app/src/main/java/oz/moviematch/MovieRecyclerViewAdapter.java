@@ -83,9 +83,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
             OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
 
-            Log.d("DEBUG", "tt" + String.format("%07d", Integer.parseInt(current)));
+            Log.d("DEBUG", current);
 
-            myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(current))).enqueue(movieCallback);
+            myInterface.getMovie(current).enqueue(movieCallback);
 
         }
 
