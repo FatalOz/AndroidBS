@@ -18,8 +18,13 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Map;
 
 import oz.moviematch.models.Movie;
+import oz.moviematch.models.MoviesDO;
+import oz.moviematch.models.ProfilesDO;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,12 +33,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DisplayPageActivity extends Activity {
     TextView movieName, movieYear, likePercentage;
-    ImageView likeButton, favoriteButton, moviePoster;
+    ImageView likeButton, dislikeButton, favoriteButton, moviePoster;
     final String ratingMessage = " liked this movie";
     boolean isLiked = false;
+    boolean isNotLiked = false;
     boolean isFavorited = false;
-    int percentLiked = 78;
+    int percentLiked = 0;
     int movieId = 0;
+    Map<String, Boolean> ratings;
 
     public static final String ARG_OBJECT = "object";
 
@@ -59,62 +66,107 @@ public class DisplayPageActivity extends Activity {
         movieYear = findViewById(R.id.movieYear);
         moviePoster = findViewById(R.id.poster);
         likeButton = findViewById(R.id.likeButton);
+        dislikeButton = findViewById(R.id.dislikeButton);
         likePercentage = findViewById(R.id.likePercentage);
         favoriteButton = findViewById(R.id.favoriteButton);
         myInterface.getMovie("tt" + String.format("%07d", movieId)).enqueue(movieCallback);
 
-        if(favorites.contains("" + movieId)){
-            isFavorited = true;
-            favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-        }
-
-        likeButton.setOnClickListener(new View.OnClickListener() {
+        new Thread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                isLiked = !isLiked;
-                if(isLiked){
-                    likeButton.setImageResource(R.drawable.thumbs_up_filled);
-                    if(percentLiked != 100){
-                        percentLiked++;
-                    }
-                } else {
-                    likeButton.setImageResource(R.drawable.thumb_up_empty);
-                    if(percentLiked != 0){
-                        percentLiked--;
+            public void run() {
+                //add to movie table
+                MoviesDO movie = DBUtils.readMovie("" + movieId);
+
+                ratings = movie.getRatings();
+                Boolean rating = ratings.get(DBUtils.getUserId());
+                if(rating != null){
+                    if(rating){
+                        isLiked = true;
+                    } else{
+                        isNotLiked = true;
                     }
                 }
+                if(favorites.contains("" + movieId)){
+                    isFavorited = true;
+                    favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
+                }
+
+                likeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isLiked = !isLiked;
+                        if(isLiked){
+                            DBUtils.addRating("" + movieId, true);
+                            likeButton.setImageResource(R.drawable.thumbs_up_filled);
+                            if(percentLiked != 100){
+                                percentLiked++;
+                            }
+                        } else {
+                            likeButton.setImageResource(R.drawable.thumb_up_empty);
+                            dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                            isNotLiked = false;
+                            if(percentLiked != 0){
+                                percentLiked--;
+                            }
+                        }
+                        likePercentage.setText(percentLiked + "% " + ratingMessage);
+                    }
+                });
+
+                dislikeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isNotLiked = !isNotLiked;
+                        if(isNotLiked){
+                            DBUtils.addRating("" + movieId, false);
+                            dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
+                            isLiked = false;
+                            likeButton.setImageResource(R.drawable.thumb_up_empty);
+                            if(percentLiked != 100){
+                                percentLiked--;
+                            }
+                        } else {
+                            dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                            if(percentLiked != 0){
+                                percentLiked++;
+                            }
+                        }
+                        likePercentage.setText(percentLiked + "% " + ratingMessage);
+                    }
+                });
+
+
+
+                favoriteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isFavorited = !isFavorited;
+                        if(isFavorited){
+                            favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
+
+                            // Toast
+                            Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
+                            toast.show();
+
+                            // Add to Favorites List
+                            addToFavorites("" + movieId, getBaseContext());
+
+                            // DEBUG
+                            for(String favorite: favorites){
+                                Log.d("Favorites", favorite);
+                            }
+
+                        } else {
+                            removeFromFavorites("" + movieId, getBaseContext());
+                            favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+                        }
+                    }
+                });
+                percentLiked = computeRatings(ratings);
                 likePercentage.setText(percentLiked + "% " + ratingMessage);
             }
-        });
 
-        favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isFavorited = !isFavorited;
-                if(isFavorited){
-                    favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-
-                    // Toast
-                    Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    // Add to Favorites List
-                    addToFavorites("" + movieId, getBaseContext());
-
-                    // DEBUG
-                    for(String favorite: favorites){
-                        Log.d("Favorites", favorite);
-                    }
-
-                } else {
-                    removeFromFavorites("" + movieId, getBaseContext());
-                    favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
-                }
-            }
-        });
-
-
-        likePercentage.setText(percentLiked + "% " + ratingMessage);
+        }).start();
 
 
     }
@@ -182,4 +234,36 @@ public class DisplayPageActivity extends Activity {
         }
         return list;
     }
+
+    public static int computeRatings(Map<String, Boolean> ratings){
+        int x = 0;
+        Boolean[] ratingCol = (Boolean[]) ratings.values().toArray();
+        for(int i = 0; i < ratingCol.length; i++){
+            x += ratingCol[i] ? 1 : 0;
+        }
+
+        return (x/ratingCol.length) * 100 ;
+    }
+
+    // Call in a thread
+    public static String[] getThreeRelaventMovies(int movieId, Map<String, Boolean> ratings){
+        String[] movies = new String[3];
+
+        Hashtable<String, Integer> movieReviews = new Hashtable<>();
+
+        for(String name : ratings.keySet()){
+            ProfilesDO profile = DBUtils.readProfile(name);
+            for(String movie : profile.getRatings().keySet()){
+                int reviewCount = movieReviews.containsKey(movie) ? movieReviews.get(movie) + 1 : 1;
+                movieReviews.put(movie, reviewCount);
+            }
+        }
+
+
+
+
+        return movies;
+    }
+
+
 }

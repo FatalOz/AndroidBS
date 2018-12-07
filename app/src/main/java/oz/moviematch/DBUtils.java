@@ -47,6 +47,10 @@ public class DBUtils {
         }).start();
     }
 
+    public static String getUserId(){
+        return userId;
+    }
+
     public static MoviesDO readMovie(final String movieId) {
         MoviesDO movie = dynamoDBMapper.load(
                 MoviesDO.class,

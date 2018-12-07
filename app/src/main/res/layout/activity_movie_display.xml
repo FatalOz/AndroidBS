@@ -52,16 +52,30 @@
         app:srcCompat="@drawable/ic_star_border_black_24dp" />
 
     <ImageView
-        android:id="@+id/likeButton"
-        android:layout_width="55dp"
-        android:layout_height="52dp"
+        android:id="@+id/dislikeButton"
+        android:layout_width="29dp"
+        android:layout_height="28dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="152dp"
+        android:layout_marginStart="176dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/movieYear"
         app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/thumb_up_empty"
+        android:scaleY="-1"/>
+
+    <ImageView
+        android:id="@+id/likeButton"
+        android:layout_width="29dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/dislikeButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/movieYear"
         app:srcCompat="@drawable/thumb_up_empty" />
 
     <TextView
