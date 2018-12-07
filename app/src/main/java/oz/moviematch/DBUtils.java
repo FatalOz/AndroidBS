@@ -7,9 +7,13 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import oz.moviematch.models.Movie;
 import oz.moviematch.models.MoviesDO;
 import oz.moviematch.models.ProfilesDO;
 
@@ -34,17 +38,17 @@ public class DBUtils {
                     movie.setMovieId(movieId);
                     movie.setRatings(Collections.<String,Boolean>emptyMap());
                 }
-
-                Map<String, Boolean> oldRatings = movie.getRatings();
-                if (rating == null) {
-                    oldRatings.remove(userId);
-                }
                 else {
-                    oldRatings.put(userId, rating);
+                    Map<String, Boolean> oldRatings = movie.getRatings();
+                    if (rating == null) {
+                        oldRatings.remove(userId);
+                    }
+                    else {
+                        oldRatings.put(userId, rating);
+                    }
+                    movie.setRatings(oldRatings);
                 }
-                movie.setRatings(oldRatings);
-
-                dynamoDBMapper.save(movie);
+                saveMovie(movie);
 
                 //add to profile table
                 ProfilesDO profile = readProfile(userId);
@@ -54,14 +58,16 @@ public class DBUtils {
                     profile.setUserId(userId);
                     profile.setRatings(Collections.<String,Boolean>emptyMap());
                 }
-                oldRatings = profile.getRatings();
-                if (rating == null) {
-                    oldRatings.remove(movieId);
-                }
                 else {
-                    oldRatings.put(movieId, rating);
+                    Map<String, Boolean> oldRatings = profile.getRatings();
+                    if (rating == null) {
+                        oldRatings.remove(movieId);
+                    }
+                    else {
+                        oldRatings.put(movieId, rating);
+                    }
+                    profile.setRatings(oldRatings);
                 }
-                profile.setRatings(oldRatings);
 
                 dynamoDBMapper.save(profile);
             }
@@ -72,11 +78,26 @@ public class DBUtils {
         return userId;
     }
 
+    public static void saveMovie(final MoviesDO movie) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dynamoDBMapper.save(movie);
+            }
+        }).start();
+    }
+
     public static MoviesDO readMovie(final String movieId) {
         MoviesDO movie = dynamoDBMapper.load(
                 MoviesDO.class,
                 movieId);
 
+        if (movie == null) {
+            movie = new MoviesDO();
+            movie.setMovieId(movieId);
+            movie.setRatings(Collections.<String, Boolean>emptyMap());
+            saveMovie(movie);
+        }
         return movie;
     }
 
