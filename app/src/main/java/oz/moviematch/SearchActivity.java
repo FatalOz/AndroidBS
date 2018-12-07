@@ -1,76 +1,103 @@
 package oz.moviematch;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
-import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import oz.moviematch.models.Movie;
+import oz.moviematch.models.MovieList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SearchActivity extends Activity {
-    Button searchButton;
-    EditText textInput;
+public class SearchActivity extends ListActivity {
+    List<Map<String, String>> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.search);
 
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            doSearch(query);
+        }
+    }
+    private void doSearch(String query){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.omdbapi.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        textInput = findViewById(R.id.search_box);
-        searchButton=findViewById(R.id.searchButton);
+
         final OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("textBox", textInput.getText().toString());
-                myInterface.getMovies(textInput.getText().toString()).enqueue(moviesCallback);
-            }
-
-        });
+        myInterface.getMovies(query).enqueue(moviesCallback);
     }
-    Callback<List<Movie>> moviesCallback;
-
-    {
-        moviesCallback = new Callback<List<Movie>>() {
+    Callback<MovieList> moviesCallback = new Callback<MovieList>() {
             @Override
-            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+            public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 if (response.isSuccessful()) {
-                    List<Movie> movieResponses = response.body();
-
-                    // Populate RecyclerView
-                    Intent intent = new Intent(getBaseContext(), SearchActivity.class);
-                    intent.putExtra("MOVIES", (Serializable)  movieResponses);
-                    getBaseContext().startActivity(intent);
+                    MovieList movies = response.body();
+                    data = new ArrayList<>();
+                    for (Movie movie : movies.getMovies()) {
+                        Map<String, String> remap = new HashMap<>();
+                        remap.put("Title", movie.getTitle());
+                        remap.put("Year", movie.getYear());
+                        remap.put("ID", movie.getId());
+                        data.add(remap);
+                    }
+                    ListAdapter adapter = new SimpleAdapter(
+                            getBaseContext(),
+                            data,
+                            R.layout.movie_search_item,
+                            new String[] {"Title", "Year"},
+                            new int[] {R.id.title, R.id.year});
+                    setListAdapter(adapter);
                 } else {
-                    Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+                    Log.d("SearchActivity", "Code: " + response.code() + " Message: " + response.message());
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Movie>> call, Throwable t) {
+            public void onFailure(Call<MovieList> call, Throwable t) {
                 t.printStackTrace();
             }
-        };
+    };
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id){
+        String movieId = data.get(position).get("ID");
+        Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
+        intent.putExtra("MOVIE_ID", movieId);
+        v.getContext().startActivity(intent);
     }
-
-
 }
+

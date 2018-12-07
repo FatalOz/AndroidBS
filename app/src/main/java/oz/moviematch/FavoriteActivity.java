@@ -63,26 +63,6 @@ public class FavoriteActivity extends AppCompatActivity {
                 .build();
 
     }
-    Callback<List<Movie>> moviesCallback = new Callback<List<Movie>>() {
-        @Override
-        public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-            if (response.isSuccessful()) {
-                List<Movie> movieResponses = response.body();
-
-                // Populate RecyclerView
-                Intent intent = new Intent(getBaseContext(), SearchActivity.class);
-                intent.putExtra("MOVIES", (Serializable)  movieResponses);
-                getBaseContext().startActivity(intent);
-            } else {
-                Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<Movie>> call, Throwable t) {
-            t.printStackTrace();
-        }
-    };
     //search menu item
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,19 +72,10 @@ public class FavoriteActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        int id = item.getItemId();
-
-        if(id==R.id.search){
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://www.omdbapi.com")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-
-            final OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
-            Log.d("textBox", mSearchBoxEditText.getText().toString());
-            myInterface.getMovies(mSearchBoxEditText.getText().toString()).enqueue(moviesCallback);
-            return true;
+        if (item.getItemId() == R.id.search){
+            Boolean check = onSearchRequested();
+            Log.d("FavoriteActivity", "onSearchRequested() returned " + check.toString());
+            return check;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -33,7 +33,7 @@ public class DisplayPageActivity extends Activity {
     boolean isLiked = false;
     boolean isFavorited = false;
     int percentLiked = 78;
-    int movieId = 0;
+    String movieId;
 
     public static final String ARG_OBJECT = "object";
 
@@ -48,8 +48,7 @@ public class DisplayPageActivity extends Activity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        String id = getIntent().getStringExtra("MOVIE_ID");
-        movieId = Integer.parseInt(id);
+        movieId = getIntent().getStringExtra("MOVIE_ID");
 
         OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
 
@@ -61,9 +60,9 @@ public class DisplayPageActivity extends Activity {
         likeButton = findViewById(R.id.likeButton);
         likePercentage = findViewById(R.id.likePercentage);
         favoriteButton = findViewById(R.id.favoriteButton);
-        myInterface.getMovie("tt" + String.format("%07d", movieId)).enqueue(movieCallback);
+        myInterface.getMovie(movieId).enqueue(movieCallback);
 
-        if(favorites.contains("" + movieId)){
+        if(favorites.contains(movieId)){
             isFavorited = true;
             favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
         }
