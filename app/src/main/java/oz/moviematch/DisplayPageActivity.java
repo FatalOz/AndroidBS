@@ -195,17 +195,19 @@ public class DisplayPageActivity extends Activity {
                         });
                         String[] movies = getThreeRelevantMovies(ratings);
 
-                        if(movies[0] != ""){
+                        
+
+                        if(movies[0] != null){
                             myInterface.getMovie(movies[0]).enqueue(movieSuggestion1Callback);
                         }
 
-                        if (movies[1] != ""){
+                        if (movies[1] != null){
                             myInterface.getMovie(movies[1]).enqueue(movieSuggestion2Callback);
 
                         }
 
-                        if(movies[2] != ""){
-                            myInterface.getMovie(movies[0]).enqueue(movieSuggestion3Callback);
+                        if(movies[2] != null){
+                            myInterface.getMovie(movies[2]).enqueue(movieSuggestion3Callback);
 
                         }
                     }
