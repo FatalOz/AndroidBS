@@ -2,6 +2,7 @@ package oz.moviematch;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 import oz.moviematch.models.Movie;
 import oz.moviematch.models.MoviesDO;
@@ -32,9 +34,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DisplayPageActivity extends Activity {
-    TextView movieName, movieYear, likePercentage;
-    ImageView likeButton, dislikeButton, favoriteButton, moviePoster;
-    final String ratingMessage = " liked this movie";
+    TextView movieName, movieYear, likePercentage, movieSuggestion1, movieSuggestion2, movieSuggestion3;
+    ImageView likeButton, dislikeButton, favoriteButton, moviePoster, movieSuggestionPoster1, movieSuggestionPoster2, movieSuggestionPoster3;
+    final String ratingMessage = " liked this movie!";
     boolean isLiked = false;
     boolean isNotLiked = false;
     boolean isFavorited = false;
@@ -58,7 +60,8 @@ public class DisplayPageActivity extends Activity {
         String id = getIntent().getStringExtra("MOVIE_ID");
         movieId = Integer.parseInt(id);
 
-        OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
+
+        final OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
 
         final ArrayList<String> favorites = getFavorites(getBaseContext());
 
@@ -69,6 +72,12 @@ public class DisplayPageActivity extends Activity {
         dislikeButton = findViewById(R.id.dislikeButton);
         likePercentage = findViewById(R.id.likePercentage);
         favoriteButton = findViewById(R.id.favoriteButton);
+        movieSuggestion1 = findViewById(R.id.movieSuggestion1);
+        movieSuggestion2 = findViewById(R.id.movieSuggestion2);
+        movieSuggestion3 = findViewById(R.id.movieSuggestion3);
+        movieSuggestionPoster1 = findViewById(R.id.movieSuggestionPoster1);
+        movieSuggestionPoster2 = findViewById(R.id.movieSuggestionPoster2);
+        movieSuggestionPoster3 = findViewById(R.id.movieSuggestionPoster3);
         myInterface.getMovie("tt" + String.format("%07d", movieId)).enqueue(movieCallback);
 
         new Thread(new Runnable() {
@@ -86,6 +95,19 @@ public class DisplayPageActivity extends Activity {
                         isNotLiked = true;
                     }
                 }
+
+                if(isLiked){
+                    likeButton.setImageResource(R.drawable.thumbs_up_filled);
+                } else {
+                    likeButton.setImageResource(R.drawable.thumb_up_empty);
+                }
+
+                if(isNotLiked){
+                    dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
+                } else {
+                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                }
+
                 if(favorites.contains("" + movieId)){
                     isFavorited = true;
                     favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
@@ -96,7 +118,7 @@ public class DisplayPageActivity extends Activity {
                     public void onClick(View v) {
                         isLiked = !isLiked;
                         if(isLiked){
-                            DBUtils.addRating("" + movieId, true);
+                            DBUtils.updateRating("" + movieId, true);
                             likeButton.setImageResource(R.drawable.thumbs_up_filled);
                             if(percentLiked != 100){
                                 percentLiked++;
@@ -118,7 +140,7 @@ public class DisplayPageActivity extends Activity {
                     public void onClick(View v) {
                         isNotLiked = !isNotLiked;
                         if(isNotLiked){
-                            DBUtils.addRating("" + movieId, false);
+                            DBUtils.updateRating("" + movieId, false);
                             dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
                             isLiked = false;
                             likeButton.setImageResource(R.drawable.thumb_up_empty);
@@ -164,6 +186,24 @@ public class DisplayPageActivity extends Activity {
                 });
                 percentLiked = computeRatings(ratings);
                 likePercentage.setText(percentLiked + "% " + ratingMessage);
+
+                String[] movies = getThreeRelevantMovies(movieId, ratings);
+
+                if(movies[0] != ""){
+                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion1Callback);
+                }
+
+                if (movies[1] != ""){
+                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion2Callback);
+
+                }
+
+                if(movies[2] != ""){
+                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion3Callback);
+
+                }
+
+
             }
 
         }).start();
@@ -189,6 +229,112 @@ public class DisplayPageActivity extends Activity {
                         .error(R.drawable.ic_movie_filter_black_24dp)
                         .resize(600, 700)
                         .into(moviePoster);
+            } else {
+                Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<Movie> call, Throwable t) {
+            t.printStackTrace();
+        }
+    };
+
+    Callback<Movie> movieSuggestion1Callback = new Callback<Movie>() {
+        @Override
+        public void onResponse(Call<Movie> call, Response<Movie> response) {
+            if (response.isSuccessful()) {
+                final Movie movieResponse = response.body();
+                // Get All Movie Data
+                String posterUrl = movieResponse.getPosterUrl();
+                String movieTitle = movieResponse.getTitle();
+                // Set All Movie Data
+                movieSuggestion1.setText(movieTitle);
+                Picasso.get()
+                        .load(posterUrl)
+                        .placeholder(R.drawable.ic_movie_filter_black_24dp)
+                        .error(R.drawable.ic_movie_filter_black_24dp)
+                        .resize(600, 700)
+                        .into(movieSuggestionPoster1);
+                movieSuggestionPoster1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
+                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        v.getContext().startActivity(intent);
+                    }
+                });
+            } else {
+                Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<Movie> call, Throwable t) {
+            t.printStackTrace();
+        }
+    };
+
+    Callback<Movie> movieSuggestion2Callback = new Callback<Movie>() {
+        @Override
+        public void onResponse(Call<Movie> call, Response<Movie> response) {
+            if (response.isSuccessful()) {
+                final Movie movieResponse = response.body();
+                // Get All Movie Data
+                String posterUrl = movieResponse.getPosterUrl();
+                String movieTitle = movieResponse.getTitle();
+                // Set All Movie Data
+                movieSuggestion2.setText(movieTitle);
+                Picasso.get()
+                        .load(posterUrl)
+                        .placeholder(R.drawable.ic_movie_filter_black_24dp)
+                        .error(R.drawable.ic_movie_filter_black_24dp)
+                        .resize(600, 700)
+                        .into(movieSuggestionPoster2);
+                movieSuggestionPoster2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
+                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        v.getContext().startActivity(intent);
+                    }
+                });
+            } else {
+                Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<Movie> call, Throwable t) {
+            t.printStackTrace();
+        }
+    };
+
+    Callback<Movie> movieSuggestion3Callback = new Callback<Movie>() {
+        @Override
+        public void onResponse(Call<Movie> call, Response<Movie> response) {
+            if (response.isSuccessful()) {
+                final Movie movieResponse = response.body();
+                // Get All Movie Data
+                String posterUrl = movieResponse.getPosterUrl();
+                String movieTitle = movieResponse.getTitle();
+                // Set All Movie Data
+                movieSuggestion3.setText(movieTitle);
+                Picasso.get()
+                        .load(posterUrl)
+                        .placeholder(R.drawable.ic_movie_filter_black_24dp)
+                        .error(R.drawable.ic_movie_filter_black_24dp)
+                        .resize(600, 700)
+                        .into(movieSuggestionPoster3);
+
+                movieSuggestionPoster3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
+                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        v.getContext().startActivity(intent);
+                    }
+                });
             } else {
                 Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
             }
@@ -246,7 +392,7 @@ public class DisplayPageActivity extends Activity {
     }
 
     // Call in a thread
-    public static String[] getThreeRelaventMovies(int movieId, Map<String, Boolean> ratings){
+    public static String[] getThreeRelevantMovies(int movieId, Map<String, Boolean> ratings){
         String[] movies = new String[3];
 
         Hashtable<String, Integer> movieReviews = new Hashtable<>();
@@ -259,9 +405,23 @@ public class DisplayPageActivity extends Activity {
             }
         }
 
+        Set<String> movieKeys = movieReviews.keySet();
 
+        int[] topMovieRatings = new int[3];
+        int lowest = 0;
 
-
+        for(String movie : movieKeys){
+            int movieRating = movieReviews.get(movie);
+            if(movieRating > topMovieRatings[lowest]){
+                movies[lowest] = movie;
+                topMovieRatings[lowest] = movieRating;
+                for(int i = 0; i < topMovieRatings.length; i++){
+                    if(topMovieRatings[lowest] > topMovieRatings[0]){
+                        lowest = i;
+                    }
+                }
+            }
+        }
         return movies;
     }
 
