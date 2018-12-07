@@ -128,6 +128,7 @@ public class DisplayPageActivity extends Activity {
                         } else {
                             likeButton.setImageResource(R.drawable.thumb_up_empty);
                             dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                            DBUtils.updateRating(movieId, null);
                             isNotLiked = false;
                             if(percentLiked != 0){
                                 percentLiked--;
@@ -151,6 +152,7 @@ public class DisplayPageActivity extends Activity {
                             }
                         } else {
                             dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                            DBUtils.updateRating(movieId, null);
                             if(percentLiked != 0){
                                 percentLiked++;
                             }
