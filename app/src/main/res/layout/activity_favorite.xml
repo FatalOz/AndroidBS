@@ -12,6 +12,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+        <EditText
+            android:id="@+id/ma_search_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter a movie name"
+            android:textSize="22sp"/>
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="wrap_content"

@@ -215,9 +215,14 @@ public class DisplayPageActivity extends Activity {
 
                 percentLiked = computeRatings(ratings);
 
+
             }
 
         }).start();
+
+
+
+
     }
 
     Callback<Movie> movieCallback = new Callback<Movie>() {
@@ -405,24 +410,18 @@ public class DisplayPageActivity extends Activity {
     }
 
     // Call in a thread
-    public static String[] getThreeRelevantMovies(final Map<String, Boolean> ratings){
+    public static String[] getThreeRelevantMovies(Map<String, Boolean> ratings){
         String[] movies = new String[3];
 
-        final Hashtable<String, Integer> movieReviews = new Hashtable<>();
+        Hashtable<String, Integer> movieReviews = new Hashtable<>();
 
-        new Thread(new Runnable(){
-            @Override
-            public void run(){
-                for(String name : ratings.keySet()){
-
-                    ProfilesDO profile = DBUtils.readProfile(name);
-                    for(String movie : profile.getRatings().keySet()){
-                        int reviewCount = movieReviews.containsKey(movie) ? movieReviews.get(movie) + 1 : 1;
-                        movieReviews.put(movie, reviewCount);
-                    }
-                }
+        for(String name : ratings.keySet()){
+            ProfilesDO profile = DBUtils.readProfile(name);
+            for(String movie : profile.getRatings().keySet()){
+                int reviewCount = movieReviews.containsKey(movie) ? movieReviews.get(movie) + 1 : 1;
+                movieReviews.put(movie, reviewCount);
             }
-        }).start();
+        }
 
         Set<String> movieKeys = movieReviews.keySet();
 

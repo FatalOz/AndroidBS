@@ -33,31 +33,43 @@ public class DBUtils {
             public void run() {
                 //add to movie table
                 MoviesDO movie = readMovie(movieId);
-
-                Map<String, Boolean> oldRatings = movie.getRatings();
-                if (rating == null) {
-                    oldRatings.remove(userId);
+                if (movie == null) {
+                    movie = new MoviesDO();
+                    movie.setMovieId(movieId);
+                    movie.setRatings(Collections.<String,Boolean>emptyMap());
                 }
                 else {
-                    oldRatings.put(userId, rating);
+                    Map<String, Boolean> oldRatings = movie.getRatings();
+                    if (rating == null) {
+                        oldRatings.remove(userId);
+                    }
+                    else {
+                        oldRatings.put(userId, rating);
+                    }
+                    movie.setRatings(oldRatings);
                 }
-                movie.setRatings(oldRatings);
-
                 saveMovie(movie);
 
                 //add to profile table
                 ProfilesDO profile = readProfile(userId);
 
-                oldRatings = profile.getRatings();
-                if (rating == null) {
-                    oldRatings.remove(movieId);
+                if (profile == null) {
+                    profile = new ProfilesDO();
+                    profile.setUserId(userId);
+                    profile.setRatings(Collections.<String,Boolean>emptyMap());
                 }
                 else {
-                    oldRatings.put(movieId, rating);
+                    Map<String, Boolean> oldRatings = profile.getRatings();
+                    if (rating == null) {
+                        oldRatings.remove(movieId);
+                    }
+                    else {
+                        oldRatings.put(movieId, rating);
+                    }
+                    profile.setRatings(oldRatings);
                 }
-                profile.setRatings(oldRatings);
 
-                saveProfile(profile);
+                dynamoDBMapper.save(profile);
             }
         }).start();
     }
@@ -75,14 +87,6 @@ public class DBUtils {
         }).start();
     }
 
-    public static void saveProfile(final ProfilesDO profile) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dynamoDBMapper.save(profile);
-            }
-        }).start();
-    }
     public static MoviesDO readMovie(final String movieId) {
         MoviesDO movie = dynamoDBMapper.load(
                 MoviesDO.class,
@@ -102,12 +106,6 @@ public class DBUtils {
                 ProfilesDO.class,
                 profileId);
 
-        if (profile == null) {
-            profile = new ProfilesDO();
-            profile.setUserId(userId);
-            profile.setRatings(Collections.<String, Boolean>emptyMap());
-            saveProfile(profile);
-        }
         return profile;
     }
 }
