@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -82,6 +83,9 @@ public class DisplayPageActivity extends Activity {
         movieSuggestionPoster3 = findViewById(R.id.movieSuggestionPoster3);
         myInterface.getMovie(movieId).enqueue(movieCallback);
 
+
+        final Handler uiHandler = new Handler(getBaseContext().getMainLooper());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -97,120 +101,131 @@ public class DisplayPageActivity extends Activity {
                         isNotLiked = true;
                     }
                 }
-
-                if(isLiked){
-                    likeButton.setImageResource(R.drawable.thumbs_up_filled);
-                } else {
-                    likeButton.setImageResource(R.drawable.thumb_up_empty);
-                }
-
-                if(isNotLiked){
-                    dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
-                } else {
-                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
-                }
-
-                if(favorites.contains(movieId)){
-                    isFavorited = true;
-                    favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-                }
-
-                likeButton.setOnClickListener(new View.OnClickListener() {
+                uiHandler.post(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        isLiked = !isLiked;
+                    public void run () {
+                        // make operation on UI - on example
+                        // on progress bar.
+                        likePercentage.setText(percentLiked + "% " + ratingMessage);
+
                         if(isLiked){
-                            DBUtils.updateRating(movieId, true);
                             likeButton.setImageResource(R.drawable.thumbs_up_filled);
-                            if(percentLiked != 100){
-                                percentLiked++;
-                            }
                         } else {
                             likeButton.setImageResource(R.drawable.thumb_up_empty);
-                            dislikeButton.setImageResource(R.drawable.thumb_up_empty);
-                            DBUtils.updateRating(movieId, null);
-                            isNotLiked = false;
-                            if(percentLiked != 0){
-                                percentLiked--;
-                            }
                         }
-                        likePercentage.setText(percentLiked + "% " + ratingMessage);
-                    }
-                });
 
-                dislikeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isNotLiked = !isNotLiked;
                         if(isNotLiked){
-                            DBUtils.updateRating(movieId, false);
                             dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
-                            isLiked = false;
-                            likeButton.setImageResource(R.drawable.thumb_up_empty);
-                            if(percentLiked != 100){
-                                percentLiked--;
-                            }
                         } else {
                             dislikeButton.setImageResource(R.drawable.thumb_up_empty);
-                            DBUtils.updateRating(movieId, null);
-                            if(percentLiked != 0){
-                                percentLiked++;
-                            }
                         }
-                        likePercentage.setText(percentLiked + "% " + ratingMessage);
-                    }
-                });
 
-
-
-                favoriteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isFavorited = !isFavorited;
-                        if(isFavorited){
+                        if(favorites.contains(movieId)){
+                            isFavorited = true;
                             favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-
-                            // Toast
-                            Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
-                            toast.show();
-
-                            // Add to Favorites List
-                            addToFavorites(movieId, getBaseContext());
-
-                            // DEBUG
-                            for(String favorite: favorites){
-                                Log.d("Favorites", favorite);
-                            }
-
                         } else {
-                            removeFromFavorites(movieId, getBaseContext());
                             favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
                         }
+
+                        likeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                isLiked = !isLiked;
+                                if(isLiked){
+                                    DBUtils.updateRating(movieId, true);
+                                    likeButton.setImageResource(R.drawable.thumbs_up_filled);
+                                    if(percentLiked != 100){
+                                        percentLiked++;
+                                    }
+                                } else {
+                                    likeButton.setImageResource(R.drawable.thumb_up_empty);
+                                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                                    DBUtils.updateRating(movieId, null);
+                                    isNotLiked = false;
+                                    if(percentLiked != 0){
+                                        percentLiked--;
+                                    }
+                                }
+                                likePercentage.setText(percentLiked + "% " + ratingMessage);
+                            }
+                        });
+
+                        dislikeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                isNotLiked = !isNotLiked;
+                                if(isNotLiked){
+                                    DBUtils.updateRating(movieId, false);
+                                    dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
+                                    isLiked = false;
+                                    likeButton.setImageResource(R.drawable.thumb_up_empty);
+                                    if(percentLiked != 100){
+                                        percentLiked--;
+                                    }
+                                } else {
+                                    dislikeButton.setImageResource(R.drawable.thumb_up_empty);
+                                    DBUtils.updateRating(movieId, null);
+                                    if(percentLiked != 0){
+                                        percentLiked++;
+                                    }
+                                }
+                                likePercentage.setText(percentLiked + "% " + ratingMessage);
+                            }
+                        });
+
+
+
+                        favoriteButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                isFavorited = !isFavorited;
+                                if(isFavorited){
+                                    favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
+
+                                    // Toast
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
+                                    toast.show();
+
+                                    // Add to Favorites List
+                                    addToFavorites(movieId, getBaseContext());
+
+                                    // DEBUG
+                                    for(String favorite: favorites){
+                                        Log.d("Favorites", favorite);
+                                    }
+
+                                } else {
+                                    removeFromFavorites(movieId, getBaseContext());
+                                    favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+                                }
+                            }
+                        });
+                        String[] movies = getThreeRelevantMovies(ratings);
+
+                        if(movies[0] != ""){
+                            myInterface.getMovie(movies[0]).enqueue(movieSuggestion1Callback);
+                        }
+
+                        if (movies[1] != ""){
+                            myInterface.getMovie(movies[1]).enqueue(movieSuggestion2Callback);
+
+                        }
+
+                        if(movies[2] != ""){
+                            myInterface.getMovie(movies[0]).enqueue(movieSuggestion3Callback);
+
+                        }
                     }
                 });
+
                 percentLiked = computeRatings(ratings);
-                likePercentage.setText(percentLiked + "% " + ratingMessage);
-
-                String[] movies = getThreeRelevantMovies(ratings);
-
-                if(movies[0] != ""){
-                    myInterface.getMovie(movies[0]).enqueue(movieSuggestion1Callback);
-                }
-
-                if (movies[1] != ""){
-                    myInterface.getMovie(movies[1]).enqueue(movieSuggestion2Callback);
-
-                }
-
-                if(movies[2] != ""){
-                    myInterface.getMovie(movies[0]).enqueue(movieSuggestion3Callback);
-
-                }
 
 
             }
 
         }).start();
+
+
 
 
     }
@@ -387,12 +402,16 @@ public class DisplayPageActivity extends Activity {
 
     public static int computeRatings(Map<String, Boolean> ratings){
         int x = 0;
-        Boolean[] ratingCol = (Boolean[]) ratings.values().toArray();
-        for(int i = 0; i < ratingCol.length; i++){
-            x += ratingCol[i] ? 1 : 0;
+        Collection<Boolean> ratingCol = ratings.values();
+        for(Boolean rating: ratingCol){
+            x += rating ? 1 : 0;
         }
 
-        return (x/ratingCol.length) * 100 ;
+        if(ratingCol.size() == 0){
+            return 0;
+        }
+
+        return (x/ratingCol.size()) * 100 ;
     }
 
     // Call in a thread
