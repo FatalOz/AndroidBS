@@ -80,13 +80,13 @@ public class DisplayPageActivity extends Activity {
         movieSuggestionPoster1 = findViewById(R.id.movieSuggestionPoster1);
         movieSuggestionPoster2 = findViewById(R.id.movieSuggestionPoster2);
         movieSuggestionPoster3 = findViewById(R.id.movieSuggestionPoster3);
-        myInterface.getMovie("tt" + String.format("%07d", movieId)).enqueue(movieCallback);
+        myInterface.getMovie(movieId).enqueue(movieCallback);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 //add to movie table
-                MoviesDO movie = DBUtils.readMovie("" + movieId);
+                MoviesDO movie = DBUtils.readMovie(movieId);
 
                 ratings = movie.getRatings();
                 Boolean rating = ratings.get(DBUtils.getUserId());
@@ -120,7 +120,7 @@ public class DisplayPageActivity extends Activity {
                     public void onClick(View v) {
                         isLiked = !isLiked;
                         if(isLiked){
-                            DBUtils.updateRating("" + movieId, true);
+                            DBUtils.updateRating(movieId, true);
                             likeButton.setImageResource(R.drawable.thumbs_up_filled);
                             if(percentLiked != 100){
                                 percentLiked++;
@@ -142,7 +142,7 @@ public class DisplayPageActivity extends Activity {
                     public void onClick(View v) {
                         isNotLiked = !isNotLiked;
                         if(isNotLiked){
-                            DBUtils.updateRating("" + movieId, false);
+                            DBUtils.updateRating(movieId, false);
                             dislikeButton.setImageResource(R.drawable.thumbs_up_filled);
                             isLiked = false;
                             likeButton.setImageResource(R.drawable.thumb_up_empty);
@@ -173,7 +173,7 @@ public class DisplayPageActivity extends Activity {
                             toast.show();
 
                             // Add to Favorites List
-                            addToFavorites("" + movieId, getBaseContext());
+                            addToFavorites(movieId, getBaseContext());
 
                             // DEBUG
                             for(String favorite: favorites){
@@ -181,7 +181,7 @@ public class DisplayPageActivity extends Activity {
                             }
 
                         } else {
-                            removeFromFavorites("" + movieId, getBaseContext());
+                            removeFromFavorites(movieId, getBaseContext());
                             favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
                         }
                     }
@@ -189,19 +189,19 @@ public class DisplayPageActivity extends Activity {
                 percentLiked = computeRatings(ratings);
                 likePercentage.setText(percentLiked + "% " + ratingMessage);
 
-                String[] movies = getThreeRelevantMovies(movieId, ratings);
+                String[] movies = getThreeRelevantMovies(ratings);
 
                 if(movies[0] != ""){
-                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion1Callback);
+                    myInterface.getMovie(movies[0]).enqueue(movieSuggestion1Callback);
                 }
 
                 if (movies[1] != ""){
-                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion2Callback);
+                    myInterface.getMovie(movies[1]).enqueue(movieSuggestion2Callback);
 
                 }
 
                 if(movies[2] != ""){
-                    myInterface.getMovie("tt" + String.format("%07d", Integer.parseInt(movies[0]))).enqueue(movieSuggestion3Callback);
+                    myInterface.getMovie(movies[0]).enqueue(movieSuggestion3Callback);
 
                 }
 
@@ -262,7 +262,7 @@ public class DisplayPageActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
-                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        intent.putExtra("MOVIE_ID", movieResponse.getId());
                         v.getContext().startActivity(intent);
                     }
                 });
@@ -297,7 +297,7 @@ public class DisplayPageActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
-                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        intent.putExtra("MOVIE_ID", movieResponse.getId());
                         v.getContext().startActivity(intent);
                     }
                 });
@@ -333,7 +333,7 @@ public class DisplayPageActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), DisplayPageActivity.class);
-                        intent.putExtra("MOVIE_ID", movieResponse.getId().substring(2));
+                        intent.putExtra("MOVIE_ID", movieResponse.getId());
                         v.getContext().startActivity(intent);
                     }
                 });
@@ -394,7 +394,7 @@ public class DisplayPageActivity extends Activity {
     }
 
     // Call in a thread
-    public static String[] getThreeRelevantMovies(int movieId, Map<String, Boolean> ratings){
+    public static String[] getThreeRelevantMovies(Map<String, Boolean> ratings){
         String[] movies = new String[3];
 
         Hashtable<String, Integer> movieReviews = new Hashtable<>();
