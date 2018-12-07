@@ -18,5 +18,6 @@
     <string name="year">year</string>
     <string name="name">name</string>
     <string name="title_activity_authenticator">AuthenticatorActivity</string>
-
+    <string name="app_label">Movie Match</string>
+    <string name="search_hint">Search for movies</string>
 </resources>

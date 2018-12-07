@@ -40,9 +40,11 @@ public class DisplayPageActivity extends Activity {
     boolean isLiked = false;
     boolean isNotLiked = false;
     boolean isFavorited = false;
+
     int percentLiked = 0;
-    int movieId = 0;
     Map<String, Boolean> ratings;
+
+    String movieId;
 
     public static final String ARG_OBJECT = "object";
 
@@ -57,8 +59,7 @@ public class DisplayPageActivity extends Activity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        String id = getIntent().getStringExtra("MOVIE_ID");
-        movieId = Integer.parseInt(id);
+        movieId = getIntent().getStringExtra("MOVIE_ID");
 
 
         final OmdbInterface myInterface = retrofit.create(OmdbInterface.class);
@@ -72,6 +73,7 @@ public class DisplayPageActivity extends Activity {
         dislikeButton = findViewById(R.id.dislikeButton);
         likePercentage = findViewById(R.id.likePercentage);
         favoriteButton = findViewById(R.id.favoriteButton);
+
         movieSuggestion1 = findViewById(R.id.movieSuggestion1);
         movieSuggestion2 = findViewById(R.id.movieSuggestion2);
         movieSuggestion3 = findViewById(R.id.movieSuggestion3);
@@ -108,7 +110,7 @@ public class DisplayPageActivity extends Activity {
                     dislikeButton.setImageResource(R.drawable.thumb_up_empty);
                 }
 
-                if(favorites.contains("" + movieId)){
+                if(favorites.contains(movieId)){
                     isFavorited = true;
                     favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
                 }
