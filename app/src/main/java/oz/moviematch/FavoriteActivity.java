@@ -60,6 +60,7 @@ public class FavoriteActivity extends AppCompatActivity {
                 .dynamoDBClient(dynamoDBClient)
                 .awsConfiguration(configuration)
                 .build();
+        new DBUtils(this.dynamoDBMapper, getBaseContext());
 
     }
     //search menu item
