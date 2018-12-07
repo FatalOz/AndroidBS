@@ -1,5 +1,6 @@
 package oz.moviematch;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+
+import java.io.Serializable;
 import java.util.List;
 import oz.moviematch.models.Movie;
 import retrofit2.Call;
@@ -23,8 +26,6 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-
-
 
 public class FavoriteActivity extends AppCompatActivity {
 
@@ -66,8 +67,11 @@ public class FavoriteActivity extends AppCompatActivity {
         public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
             if (response.isSuccessful()) {
                 List<Movie> movieResponses = response.body();
-                // Populate RecyclerView
 
+                // Populate RecyclerView
+                Intent intent = new Intent(getBaseContext(), SearchActivity.class);
+                intent.putExtra("MOVIES", (Serializable)  movieResponses);
+                getBaseContext().startActivity(intent);
             } else {
                 Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
             }
