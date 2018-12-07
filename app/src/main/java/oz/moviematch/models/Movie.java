@@ -2,7 +2,9 @@ package oz.moviematch.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Movie {
+import java.io.Serializable;
+
+public class Movie implements Serializable {
     public String getPosterUrl() {
         return posterUrl;
     }

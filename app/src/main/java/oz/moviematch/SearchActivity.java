@@ -1,6 +1,8 @@
 package oz.moviematch;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +11,8 @@ import android.widget.EditText;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import oz.moviematch.models.Movie;
@@ -43,23 +47,30 @@ public class SearchActivity extends Activity {
 
         });
     }
-    Callback<List<Movie>> moviesCallback = new Callback<List<Movie>>() {
-        @Override
-        public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
-            if (response.isSuccessful()) {
-                List<Movie> movieResponses = response.body();
-                // Populate RecyclerView
+    Callback<List<Movie>> moviesCallback;
 
-            } else {
-                Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+    {
+        moviesCallback = new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(Call<List<Movie>> call, Response<List<Movie>> response) {
+                if (response.isSuccessful()) {
+                    List<Movie> movieResponses = response.body();
+
+                    // Populate RecyclerView
+                    Intent intent = new Intent(getBaseContext(), SearchActivity.class);
+                    intent.putExtra("MOVIES", (Serializable)  movieResponses);
+                    getBaseContext().startActivity(intent);
+                } else {
+                    Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
+                }
             }
-        }
 
-        @Override
-        public void onFailure(Call<List<Movie>> call, Throwable t) {
-            t.printStackTrace();
-        }
-    };
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        };
+    }
 
 
 }
