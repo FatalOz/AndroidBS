@@ -7,7 +7,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 
 import java.util.Map;
 
-@DynamoDBTable(tableName = "moviecritic-mobilehub-1779569470-Profiles")
+@DynamoDBTable(tableName = "Profiles")
 
 public class ProfilesDO {
     private String _userId;

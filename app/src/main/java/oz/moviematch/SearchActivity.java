@@ -67,12 +67,14 @@ public class SearchActivity extends ListActivity {
                 if (response.isSuccessful()) {
                     MovieList movies = response.body();
                     data = new ArrayList<>();
-                    for (Movie movie : movies.getMovies()) {
-                        Map<String, String> remap = new HashMap<>();
-                        remap.put("Title", movie.getTitle());
-                        remap.put("Year", movie.getYear());
-                        remap.put("ID", movie.getId());
-                        data.add(remap);
+                    if (movies.getMovies() != null){
+                        for (Movie movie : movies.getMovies()) {
+                            Map<String, String> remap = new HashMap<>();
+                            remap.put("Title", movie.getTitle());
+                            remap.put("Year", movie.getYear());
+                            remap.put("ID", movie.getId());
+                            data.add(remap);
+                        }
                     }
                     ListAdapter adapter = new SimpleAdapter(
                             getBaseContext(),

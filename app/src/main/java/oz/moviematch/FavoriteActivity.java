@@ -33,7 +33,6 @@ public class FavoriteActivity extends AppCompatActivity {
     private MovieRecyclerViewAdapter mAdapter;
     DynamoDBMapper dynamoDBMapper;
 
-    private static EditText mSearchBoxEditText;
     private ProgressBar mProgressBar;
 
     @Override
@@ -41,7 +40,6 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
-        mSearchBoxEditText = (EditText) findViewById(R.id.ma_search_box);
         mProgressBar = (ProgressBar) findViewById(R.id.progress);
 
         mRecyclerView = findViewById(R.id.movie_recyclerview);
