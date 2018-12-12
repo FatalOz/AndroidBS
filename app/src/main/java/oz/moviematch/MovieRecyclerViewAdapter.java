@@ -2,6 +2,9 @@ package oz.moviematch;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -56,13 +60,17 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         ImageView moviePoster;
         TextView movieName;
         TextView movieYear;
+        TextView movieRating;
         String movieId;
+        ImageView removeButton;
 
         public MovieViewHolder(View view, MovieRecyclerViewAdapter adapter) {
             super(view);
             this.moviePoster = (ImageView)  view.findViewById(R.id.poster);
             this.movieName = (TextView) view.findViewById(R.id.movieName);
             this.movieYear = (TextView) view.findViewById(R.id.movieYear);
+            this.removeButton = (ImageView) view.findViewById(R.id.removeFavorite);
+            this.movieRating = (TextView) view.findViewById(R.id.movieRating);
         }
 
 
@@ -73,7 +81,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             v.getContext().startActivity(intent);
         }
 
-        public void bind(String current) {
+        public void bind(final String current) {
 
             movieId = current;
             Retrofit retrofit = new Retrofit.Builder()
@@ -87,6 +95,32 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
             myInterface.getMovie(current).enqueue(movieCallback);
 
+            removeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DisplayPageActivity.removeFromFavorites("" + current, v.getContext());
+                    Toast.makeText(v.getContext(), "Favorite removed! Click me to undo!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(v.getContext(), FavoriteActivity.class);
+                    v.getContext().startActivity(intent);
+                }
+            });
+
+            final Handler uiHandler = new Handler(Looper.getMainLooper());
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    final int rating = DisplayPageActivity.computeRatings(DBUtils.readMovie(current).getRatings());
+
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            movieRating.setText(rating + "% liked this movie");
+                        }
+                    });
+                }
+            }).start();
         }
 
         Callback<Movie> movieCallback = new Callback<Movie>() {
