@@ -8,7 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,8 +24,10 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,10 +40,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class DisplayPageActivity extends Activity {
+public class DisplayPageActivity extends AppCompatActivity {
     TextView movieName, movieYear, likePercentage, movieSuggestion1, movieSuggestion2, movieSuggestion3;
-    ImageView likeButton, dislikeButton, favoriteButton, moviePoster, movieSuggestionPoster1, movieSuggestionPoster2, movieSuggestionPoster3;
-    final String ratingMessage = " liked this movie!";
+    ImageView likeButton, dislikeButton, moviePoster, movieSuggestionPoster1, movieSuggestionPoster2, movieSuggestionPoster3;
+    private Menu menu;
+    final String ratingMessage = "liked this movie!";
     boolean isLiked = false;
     boolean isNotLiked = false;
     boolean isFavorited = false;
@@ -73,7 +80,6 @@ public class DisplayPageActivity extends Activity {
         likeButton = findViewById(R.id.likeButton);
         dislikeButton = findViewById(R.id.dislikeButton);
         likePercentage = findViewById(R.id.likePercentage);
-        favoriteButton = findViewById(R.id.favoriteButton);
 
         movieSuggestion1 = findViewById(R.id.movieSuggestion1);
         movieSuggestion2 = findViewById(R.id.movieSuggestion2);
@@ -137,13 +143,6 @@ public class DisplayPageActivity extends Activity {
                             dislikeButton.setImageResource(R.drawable.thumb_up_empty);
                         }
 
-                        if(favorites.contains(movieId)){
-                            isFavorited = true;
-                            favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-                        } else {
-                            favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
-                        }
-
                         likeButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -183,34 +182,6 @@ public class DisplayPageActivity extends Activity {
                             }
                         });
 
-
-
-                        favoriteButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                isFavorited = !isFavorited;
-                                if(isFavorited){
-                                    favoriteButton.setImageResource(R.drawable.ic_star_gold_24dp);
-
-                                    // Toast
-                                    Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
-                                    toast.show();
-
-                                    // Add to Favorites List
-                                    addToFavorites(movieId, getBaseContext());
-
-                                    // DEBUG
-                                    for(String favorite: favorites){
-                                        Log.d("Favorites", favorite);
-                                    }
-
-                                } else {
-                                    removeFromFavorites(movieId, getBaseContext());
-                                    favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp);
-                                }
-                            }
-                        });
-
                     }
                 });
 
@@ -231,8 +202,39 @@ public class DisplayPageActivity extends Activity {
                 String movieTitle = movieResponse.getTitle();
                 String movieRelease = movieResponse.getYear();
                 // Set All Movie Data
+                int maxLen = 18;
+                String newTitle = movieTitle;
+                while(newTitle.length() > maxLen){
+                    int lastIndexOfSpace = newTitle.lastIndexOf(' ');
+                    if(lastIndexOfSpace == -1){
+                       newTitle = newTitle.substring(0, maxLen);
+                       break;
+                    }
+
+                    newTitle = newTitle.substring(0, lastIndexOfSpace);
+                }
+
+                // Banned List
+                String[] bannedEndings = {"a", "the", "and", "of", "in", "an", "with", "at", "from", "until", "for", "by"};
+                List<String> bannedList = Arrays.asList(bannedEndings);
+                int lastIndexOfSpace = newTitle.lastIndexOf(' ');
+                while(newTitle.length() - lastIndexOfSpace <= 4){
+                    if(bannedList.contains(newTitle.substring(lastIndexOfSpace + 1, newTitle.length()))){
+                        newTitle = newTitle.substring(0, lastIndexOfSpace);
+                        lastIndexOfSpace = newTitle.lastIndexOf(' ');
+                    } else {
+                        break;
+                    }
+
+                }
+
+//                int max = movieTitle.length() > 20 ? 20 : movieTitle.length();
+//                String newTitle = movieTitle.substring(0, max);
+//                int lastSpace = newTitle.lastIndexOf(' ');
+
+                setTitle(newTitle + " - " + movieRelease);
                 movieName.setText(movieTitle);
-                movieYear.setText(movieRelease);
+//                movieYear.setText(movieRelease);
                 Picasso.get()
                         .load(posterUrl)
                         .placeholder(R.drawable.ic_movie_filter_black_24dp)
@@ -258,8 +260,8 @@ public class DisplayPageActivity extends Activity {
                 // Get All Movie Data
                 String posterUrl = movieResponse.getPosterUrl();
                 String movieTitle = movieResponse.getTitle();
-                if(movieTitle.length() > 13){
-                    movieTitle = movieTitle.substring(0, 10) + "...";
+                if(movieTitle.length() > 15){
+                    movieTitle = movieTitle.substring(0, 12) + "...";
                 }
                 // Set All Movie Data
                 movieSuggestion1.setText(movieTitle);
@@ -296,8 +298,8 @@ public class DisplayPageActivity extends Activity {
                 // Get All Movie Data
                 String posterUrl = movieResponse.getPosterUrl();
                 String movieTitle = movieResponse.getTitle();
-                if(movieTitle.length() > 13){
-                    movieTitle = movieTitle.substring(0, 10) + "...";
+                if(movieTitle.length() > 15){
+                    movieTitle = movieTitle.substring(0, 12) + "...";
                 }
                 // Set All Movie Data
                 movieSuggestion2.setText(movieTitle);
@@ -334,8 +336,8 @@ public class DisplayPageActivity extends Activity {
                 // Get All Movie Data
                 String posterUrl = movieResponse.getPosterUrl();
                 String movieTitle = movieResponse.getTitle();
-                if(movieTitle.length() > 13){
-                    movieTitle = movieTitle.substring(0, 10) + "...";
+                if(movieTitle.length() > 15){
+                    movieTitle = movieTitle.substring(0, 12) + "...";
                 }
                 // Set All Movie Data
                 movieSuggestion3.setText(movieTitle);
@@ -451,6 +453,47 @@ public class DisplayPageActivity extends Activity {
             }
         }
         return movies;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.movie_display, menu);
+        this.menu = menu;
+        final ArrayList<String> favorites = getFavorites(getBaseContext());
+
+        if(favorites.contains(movieId)){
+            isFavorited = true;
+            menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star_gold_24dp, null));
+//            favoriteButton.setIcon(R.drawable.ic_star_gold_24dp);
+        } else {
+//            favoriteButton.setIcon(R.drawable.ic_star_border_black_24dp);
+            menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star_border_black_24dp, null));
+
+        }
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        if (item.getItemId() == R.id.favoriteButton){
+            isFavorited = !isFavorited;
+            if(isFavorited){
+                this.menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star_gold_24dp, null));
+
+                // Toast
+                Toast toast = Toast.makeText(getApplicationContext(), "Favorite Added", Toast.LENGTH_SHORT);
+                toast.show();
+
+                // Add to Favorites List
+                addToFavorites(movieId, getBaseContext());
+
+            } else {
+                removeFromFavorites(movieId, getBaseContext());
+                this.menu.getItem(0).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star_border_black_24dp, null));
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
