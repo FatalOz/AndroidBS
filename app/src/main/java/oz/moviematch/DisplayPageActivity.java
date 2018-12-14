@@ -43,6 +43,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DisplayPageActivity extends AppCompatActivity {
     TextView movieName, movieYear, likePercentage, movieSuggestion1, movieSuggestion2, movieSuggestion3;
     ImageView likeButton, dislikeButton, moviePoster, movieSuggestionPoster1, movieSuggestionPoster2, movieSuggestionPoster3;
+    View movieDisplay;
+    View movieSuggestionBox;
     private Menu menu;
     final String ratingMessage = "liked this movie!";
     boolean isLiked = false;
@@ -87,6 +89,10 @@ public class DisplayPageActivity extends AppCompatActivity {
         movieSuggestionPoster1 = findViewById(R.id.movieSuggestionPoster1);
         movieSuggestionPoster2 = findViewById(R.id.movieSuggestionPoster2);
         movieSuggestionPoster3 = findViewById(R.id.movieSuggestionPoster3);
+
+        movieDisplay = findViewById(R.id.movieDisplay);
+
+        movieSuggestionBox = findViewById(R.id.movieSuggestionBox);
         myInterface.getMovie(movieId).enqueue(movieCallback);
 
 
@@ -228,10 +234,6 @@ public class DisplayPageActivity extends AppCompatActivity {
 
                 }
 
-//                int max = movieTitle.length() > 20 ? 20 : movieTitle.length();
-//                String newTitle = movieTitle.substring(0, max);
-//                int lastSpace = newTitle.lastIndexOf(' ');
-
                 setTitle(newTitle + " - " + movieRelease);
                 movieName.setText(movieTitle);
 //                movieYear.setText(movieRelease);
@@ -239,7 +241,7 @@ public class DisplayPageActivity extends AppCompatActivity {
                         .load(posterUrl)
                         .placeholder(R.drawable.ic_movie_filter_black_24dp)
                         .error(R.drawable.ic_movie_filter_black_24dp)
-                        .resize(600, 700)
+                        .resize(movieDisplay.getWidth(), (int) (movieDisplay.getWidth() * 1.25))
                         .into(moviePoster);
             } else {
                 Log.d("DisplayPageActivity", "Code: " + response.code() + " Message: " + response.message());
@@ -258,6 +260,7 @@ public class DisplayPageActivity extends AppCompatActivity {
             if (response.isSuccessful()) {
                 final Movie movieResponse = response.body();
                 // Get All Movie Data
+                movieSuggestionBox.setVisibility(View.VISIBLE);
                 String posterUrl = movieResponse.getPosterUrl();
                 String movieTitle = movieResponse.getTitle();
                 if(movieTitle.length() > 15){
@@ -294,6 +297,8 @@ public class DisplayPageActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<Movie> call, Response<Movie> response) {
             if (response.isSuccessful()) {
+                movieSuggestionBox.setVisibility(View.VISIBLE);
+
                 final Movie movieResponse = response.body();
                 // Get All Movie Data
                 String posterUrl = movieResponse.getPosterUrl();
@@ -332,6 +337,7 @@ public class DisplayPageActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<Movie> call, Response<Movie> response) {
             if (response.isSuccessful()) {
+                movieSuggestionBox.setVisibility(View.VISIBLE);
                 final Movie movieResponse = response.body();
                 // Get All Movie Data
                 String posterUrl = movieResponse.getPosterUrl();

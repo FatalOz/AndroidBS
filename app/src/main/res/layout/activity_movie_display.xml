@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/background">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/movieDisplay"
         android:background="@color/background">
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -35,8 +37,6 @@
                 style="@style/ElevationPoster"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="4dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,17 +99,22 @@
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/movieSuggestionBox"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/constraint1">
 
             <TextView
                 android:id="@+id/suggestionText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="We Suggest:"
                 android:textColor="#000"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/movieSuggestionPoster1"
@@ -129,10 +134,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
+                android:textColor="#000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/movieSuggestionPoster1"
                 app:layout_constraintTop_toBottomOf="@+id/movieSuggestionPoster1"
-                android:textColor="#000"
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
@@ -142,10 +147,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
+                android:textColor="#000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
-                android:textColor="#000"
                 app:layout_constraintTop_toBottomOf="@+id/suggestionText" />
 
             <TextView
@@ -167,7 +172,7 @@
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/movieSuggestionPoster2"
-                app:layout_constraintTop_toBottomOf="@+id/suggestionText"/>
+                app:layout_constraintTop_toBottomOf="@+id/suggestionText" />
 
             <TextView
                 android:id="@+id/movieSuggestion3"
@@ -175,6 +180,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:textColor="#000"
                 app:layout_constraintStart_toStartOf="@+id/movieSuggestionPoster3"
                 app:layout_constraintTop_toBottomOf="@+id/movieSuggestionPoster3" />
         </android.support.constraint.ConstraintLayout>

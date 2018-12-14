@@ -20,20 +20,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".AuthenticatorActivity">
+        <activity android:name=".AuthenticatorActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FavoriteActivity">
+        <activity
+            android:name=".FavoriteActivity"
+            android:screenOrientation="portrait" >
             <meta-data android:name="android.app.default_searchable"
                        android:value=".SearchActivity" />
         </activity>
         <activity
             android:name=".DisplayPageActivity"
-            android:label=""></activity>
-        <activity android:name=".SearchActivity" >
+            android:label=""
+            android:screenOrientation="portrait" ></activity>
+        <activity android:name=".SearchActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
